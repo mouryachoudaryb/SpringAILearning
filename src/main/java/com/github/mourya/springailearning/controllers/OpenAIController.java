@@ -105,4 +105,31 @@ public class OpenAIController {
     public float[] embedding(@RequestParam String text) {
         return embeddingModel.embed(text);
     }
+
+    @PostMapping("/openapi/similarity")
+    public double similarity(@RequestParam String text1, @RequestParam String text2) {
+
+        float [] embedding1 = embeddingModel.embed(text1);
+        float [] embedding2 = embeddingModel.embed(text2);
+
+        // Calculate cosine similarity
+        double dotProduct = 0.0;
+        double normA = 0.0;
+        double normB = 0.0;
+
+        for (int i = 0; i < embedding1.length; i++) {
+            dotProduct += embedding1[i] * embedding2[i];
+            normA += Math.pow(embedding1[i], 2);
+            normB += Math.pow(embedding2[i], 2);
+        }
+
+        if (normA != 0.0 && normB != 0.0) {
+            return dotProduct *100 / (Math.sqrt(normA) * Math.sqrt(normB)) ;
+        } else {
+            return 0.0;
+        }
+
+    }
+
+
 }
